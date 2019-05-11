@@ -1,7 +1,6 @@
 <?php
 
 namespace LLTS;
-
 /**
  * Order
  *
@@ -9,36 +8,53 @@ namespace LLTS;
  */
 class Order
 {
+  /**
+   * Quantity
+   * @var int
+   */
+  private $quantity;
 
-    /**
-     * Amount
-     * @var int
-     */
-    public $amount = 0;
+  /**
+   * Unit price
+   * @var float
+   */
+  private $unit_price;
 
-    /**
-     * Payment gateway dependency
-     * @var PaymentGateway
-     */
-    protected $gateway;
+  /**
+   * Total amount
+   * @var float
+   */
+  private $amount;
 
-    /**
-     * Constructor
-     *
-     * @return void
-     */
-    public function __construct(\PaymentGateway $gateway)
-    {
-        $this->gateway = $gateway;
-    }
+  /**
+   * Constructor
+   *
+   * @param int $quantity Quantity
+   * @param float $unit_price Unit price
+   *
+   * @return void
+   */
+  public function __construct(int $quantity, float $unit_price)
+  {
+    $this->quantity = $quantity;
+    $this->unit_price = $unit_price;
 
-    /**
-     * Process the order
-     *
-     * @return boolean
-     */
-    public function process()
-    {
-        return $this->gateway->charge($this->amount);
-    }
+    $this->amount = $quantity * $unit_price;
+  }
+
+  public function getAmount() {
+    return $this->amount;
+  }
+
+  /**
+   * Charge the total amount
+   *
+   * @param PaymentGateway $gateway Payment gateway object
+   *
+   * @return void
+   */
+  public function process(\PaymentGateway $gateway)
+  {
+    $gateway->charge($this->amount);
+  }
 }

@@ -6,43 +6,35 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
 class OrderTest extends MockeryTestCase
 {
 
-  /**
-   * @throws \ReflectionException
-   */
-  public function testOrderIsProcessed()
-  {
-    $gateway = $this->getMockBuilder('PaymentGateway')
-                    ->setMethods(['charge'])
-                    ->getMock();
-
-    $gateway->expects($this->once())
-            ->method('charge')
-            ->with($this->equalTo(200))
-            ->willReturn(true);
-
-    $order = new Order($gateway);
-
-    $order->amount = 200;
-
-    $this->assertTrue($order->process());
-
-  }
-
   public function testOrderIsProcessedWithMockery()
   {
+    $order = new Order(3, 1.99);
+
+    $this->assertEquals(5.97, $order->getAmount());
 
     $gateway = Mockery::mock('PaymentGateway');
-
     $gateway->shouldReceive('charge')
       ->once()
-      ->with(200)
+      ->with($order->getAmount())
       ->andReturn(true);
 
-    $order = new Order($gateway);
-
-    $order->amount = 200;
-
-    $this->assertTrue($order->process());
-
+    $order->process($gateway);
   }
+
+  public function testOrderIsProcessedWithASpy()
+  {
+    $order = new Order(3, 1.99);
+
+    $this->assertEquals(5.97, $order->getAmount());
+
+    $gateway_spy = Mockery::spy('PaymentGateway');
+
+    $order->process($gateway_spy);
+
+    $gateway_spy->shouldHaveReceived('charge')
+      ->once()
+      ->with($order->getAmount());
+  }
+
+
 }
