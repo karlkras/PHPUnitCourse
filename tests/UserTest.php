@@ -37,15 +37,15 @@ class UserTest extends MockeryTestCase
 
   public function testNotifyReturnsTrueWithMockery()
   {
-    $mock = Mockery::mock('alias:Mailer');
+    $message = 'Hey there Mockery!';
+    $mock = Mockery::mock('alias:LLTS\Mailer');
 
     $mock->shouldReceive('send')
       ->once()
-      ->with($this->user->email, 'Hey there hi there ho there!')
+      ->with($this->user->email, $message)
       ->andReturn(true);
-    //$this->user->setMailer($mock);
 
-    $this->assertTrue($this->user->notify("Hey there hi there ho there!"));
+    $this->assertTrue($this->user->notify($message));
   }
 
 }
